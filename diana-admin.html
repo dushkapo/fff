@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diana Flowers - Admin Panel</title>
+    <link rel="stylesheet" href="diana-style.css">
+    <link rel="stylesheet" href="diana-admin-style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Montserrat:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+</head>
+
+<body class="admin-body">
+    <!-- Форма входа -->
+    <div class="admin-login" id="loginSection">
+        <div class="login-container">
+            <div class="login-header">
+                <h1 class="brand">Diana Flowers</h1>
+                <p class="brand-subtitle">Панель управления</p>
+            </div>
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label>Пароль</label>
+                    <input type="password" id="adminPassword" class="input-field" required placeholder="•••••••••">
+                </div>
+                <button type="submit" class="btn btn-primary">Войти</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Админ-панель -->
+    <div class="admin-panel" id="adminPanel" style="display: none;">
+        <!-- Хедер админки -->
+        <header class="admin-header">
+            <div class="container">
+                <div class="admin-header-content">
+                    <h1 class="brand">Diana Flowers</h1>
+                    <div class="admin-actions">
+                        <label class="toggle-container">
+                            <span class="toggle-label">Доставка</span>
+                            <input type="checkbox" id="deliveryToggle" onchange="toggleDelivery()">
+                            <span class="toggle-switch"></span>
+                        </label>
+                        <button class="btn btn-secondary" onclick="logout()">Выйти</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="admin-main">
+            <div class="container">
+                <!-- Настройки контактов -->
+                <section class="admin-section">
+                    <h2 class="section-title">Контактная информация</h2>
+                    <form id="settingsForm" class="bouquet-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Номер телефона</label>
+                                <input type="tel" id="settingsPhone" class="input-field" required
+                                    placeholder="+7 (999) 123-45-67">
+                            </div>
+                            <div class="form-group">
+                                <label>Ссылка на Telegram</label>
+                                <input type="url" id="settingsTelegram" class="input-field" required
+                                    placeholder="https://t.me/username">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>График работы</label>
+                            <input type="text" id="settingsSchedule" class="input-field" required
+                                placeholder="Ежедневно с 9:00 до 21:00">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Сохранить контакты</button>
+                    </form>
+                </section>
+
+                <!-- Форма добавления букета -->
+                <section class="admin-section">
+                    <h2 class="section-title">Добавить новый букет</h2>
+                    <form id="addBouquetForm" class="bouquet-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Название букета</label>
+                                <input type="text" id="bouquetName" class="input-field" required
+                                    placeholder="Королевская роза">
+                            </div>
+                            <div class="form-group">
+                                <label>Описание</label>
+                                <input type="text" id="bouquetDescription" class="input-field" required
+                                    placeholder="Элегантная композиция...">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Цена (₽)</label>
+                                <input type="number" id="bouquetPrice" class="input-field" required placeholder="8500"
+                                    min="0">
+                            </div>
+                            <div class="form-group">
+                                <label>Скидка (%)</label>
+                                <input type="number" id="bouquetDiscount" class="input-field" placeholder="0" min="0"
+                                    max="100" value="0">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Фото букета</label>
+                            <div class="file-upload-area">
+                                <input type="file" id="bouquetImage" accept="image/*" onchange="previewImage(event)">
+                                <div class="file-upload-label">
+                                    <span class="upload-icon">📷</span>
+                                    <span class="upload-text">Выберите фото или перетащите сюда</span>
+                                    <span class="upload-hint">Поддерживаются JPG, PNG (макс. 5MB)</span>
+                                </div>
+                                <div class="image-preview" id="imagePreview"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-buttons">
+                            <button type="submit" class="btn btn-primary">Добавить букет</button>
+                            <button type="button" class="btn btn-secondary" onclick="resetForm()" style="display: none;"
+                                id="cancelEditBtn">Отмена</button>
+                        </div>
+                    </form>
+                </section>
+
+                <!-- Список букетов -->
+                <section class="admin-section">
+                    <h2 class="section-title">Управление букетами</h2>
+                    <div class="bouquets-list" id="bouquetsList">
+                        <!-- Букеты загружаются через JavaScript -->
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script src="diana-admin-script.js"></script>
+</body>
+
+</html>
