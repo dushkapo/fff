@@ -1,4 +1,4 @@
-# Diana Flowers
+#
 
 Премиальный сайт для цветочного бутика на Next.js 14 + Supabase.
 
@@ -46,3 +46,4 @@ npm run dev
 
 - URL: `/admin`
 - Пароль по умолчанию: `diana2024` (измените через ADMIN_PASSWORD)
+
