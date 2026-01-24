@@ -1,4 +1,4 @@
-# Diana Flowers - Деплой чеклист
+#  Flowers - Деплой чеклист
 
 ## ✅ Готово
 
@@ -133,3 +133,4 @@ response.headers.set('X-Frame-Options', 'DENY');
 ---
 
 © 2026 Diana Flowers
+
