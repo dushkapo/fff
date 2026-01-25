@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-    title: "Arzu Flowers - Премиум букеты с доставкой",
+    title: "Diana Flowers - Премиум букеты с доставкой",
     description: "Эксклюзивные букеты премиум-класса. Доставка за 2 часа или самовывоз. Цветочный бутик Diana Flowers.",
     keywords: "букеты, цветы, доставка цветов, премиум букеты, розы, пионы",
     openGraph: {
@@ -33,4 +33,5 @@ export default function RootLayout({
         </html>
     );
 }
+
 
