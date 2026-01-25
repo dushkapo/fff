@@ -13,7 +13,7 @@ export default function Footer({ settings }: FooterProps) {
                     {/* Brand */}
                     <div>
                         <h3 className="font-serif text-xl text-white uppercase tracking-[0.15em] mb-4">
-                            Diana Flowers
+                            Мир цветов
                         </h3>
                         <p className="text-zinc-600 text-sm leading-relaxed">
                             Премиум букеты для особых моментов. Каждая композиция создана с любовью.
@@ -86,5 +86,6 @@ export default function Footer({ settings }: FooterProps) {
         </footer>
     );
 }
+
 
 
