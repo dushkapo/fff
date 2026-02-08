@@ -1,0 +1,79 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@200;300;400;500;600&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: #ffffff;
+    color: #18181b;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Serif font for headings */
+.font-serif {
+    font-family: 'Playfair Display', Georgia, serif;
+}
+
+/* Elegant scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f9f9f9;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #d4d4d8;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a1a1aa;
+}
+
+/* Selection */
+::selection {
+    background: rgba(212, 175, 55, 0.2);
+    color: inherit;
+}
+
+/* Focus styles */
+*:focus-visible {
+    outline: 1px solid #D4AF37;
+    outline-offset: 2px;
+}
+
+/* Hide Google Translate bar */
+.goog-te-banner-frame,
+.skiptranslate,
+#goog-gt-tt,
+.goog-te-balloon-frame,
+.goog-te-gadget,
+iframe.goog-te-menu-frame {
+    display: none !important;
+    visibility: hidden !important;
+}
+
+body {
+    top: 0 !important;
+    position: static !important;
+}
+
+.goog-text-highlight {
+    background-color: transparent !important;
+    box-shadow: none !important;
+}
