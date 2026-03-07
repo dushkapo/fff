@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS bouquets (
   price INTEGER NOT NULL,
   discount INTEGER DEFAULT 0,
   image_url TEXT,
+  payment_url TEXT DEFAULT '',
   in_stock BOOLEAN DEFAULT true,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
 );
@@ -19,20 +20,34 @@ CREATE TABLE IF NOT EXISTS settings (
   shop_open BOOLEAN DEFAULT true,
   delivery_enabled BOOLEAN DEFAULT true,
   -- Branding
-  shop_name TEXT DEFAULT 'Diana Flowers',
-  hero_title TEXT DEFAULT 'DIANA FLOWERS',
-  hero_subtitle TEXT DEFAULT 'Изысканные букеты для особых моментов',
-  phone TEXT DEFAULT '+7 (999) 123-45-67',
-  telegram_link TEXT DEFAULT 'https://t.me/dianaflowers',
+  shop_name TEXT DEFAULT '',
+  hero_title TEXT DEFAULT '',
+  hero_subtitle TEXT DEFAULT '',
+  phone TEXT DEFAULT '',
+  telegram_link TEXT DEFAULT '',
   address TEXT DEFAULT '',
   address_link TEXT DEFAULT '',
-  schedule TEXT DEFAULT 'Ежедневно с 9:00 до 21:00',
-  -- Content fields
-  about_text TEXT DEFAULT 'Diana Flowers — это премиальный цветочный бутик, где каждый букет создаётся с безупречным вниманием к деталям.',
-  delivery_price TEXT DEFAULT '500 ₽',
-  delivery_info TEXT DEFAULT 'Срочная за 2 часа',
-  pickup_info TEXT DEFAULT 'Бесплатно\nПо готовности букета',
-  payment_info TEXT DEFAULT 'Наличные, карта\nПри получении'
+  schedule TEXT DEFAULT '',
+  -- Content toggle fields
+  about_enabled BOOLEAN DEFAULT false,
+  about_text TEXT DEFAULT '',
+  schedule_enabled BOOLEAN DEFAULT false,
+  delivery_price_enabled BOOLEAN DEFAULT false,
+  delivery_price TEXT DEFAULT '',
+  delivery_info TEXT DEFAULT '',
+  pickup_info TEXT DEFAULT '',
+  payment_info TEXT DEFAULT ''
+);
+
+-- Flowers table (for custom bouquet builder)
+CREATE TABLE IF NOT EXISTS flowers (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  name TEXT NOT NULL,
+  description TEXT,
+  price INTEGER NOT NULL, -- Price per stem
+  image_url TEXT,
+  in_stock BOOLEAN DEFAULT true,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
 );
 
 -- Insert default settings if not exists
@@ -50,6 +65,7 @@ INSERT INTO bouquets (name, description, price, discount, image_url, in_stock) V
 -- Enable Row Level Security
 ALTER TABLE bouquets ENABLE ROW LEVEL SECURITY;
 ALTER TABLE settings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE flowers ENABLE ROW LEVEL SECURITY;
 
 -- Allow ALL operations for everyone (since we use custom admin auth on frontend)
 -- WARNING: In a real production app with multiple users, you should use authenticated roles.
@@ -58,4 +74,7 @@ CREATE POLICY "Enable all access for bouquets" ON bouquets
   FOR ALL USING (true) WITH CHECK (true);
 
 CREATE POLICY "Enable all access for settings" ON settings
+  FOR ALL USING (true) WITH CHECK (true);
+
+CREATE POLICY "Enable all access for flowers" ON flowers
   FOR ALL USING (true) WITH CHECK (true);
