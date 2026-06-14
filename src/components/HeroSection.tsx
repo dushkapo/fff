@@ -30,7 +30,7 @@ export default function HeroSection({ title, subtitle }: HeroSectionProps) {
     }, []);
 
     return (
-        <section className="relative h-[70vh] min-h-[420px] sm:min-h-[600px] overflow-hidden bg-black">
+        <section className="relative h-[60vh] min-h-[380px] sm:h-[70vh] sm:min-h-[600px] overflow-hidden bg-neutral-900">
             {/* Background Images - All stacked, only current one visible */}
             {bouquetImages.map((img, idx) => (
                 <div
@@ -42,7 +42,7 @@ export default function HeroSection({ title, subtitle }: HeroSectionProps) {
                         src={img}
                         alt={`Букет ${idx + 1}`}
                         fill
-                        className="object-cover object-center"
+                        className="object-contain object-center"
                         sizes="100vw"
                         priority={idx === 0}
                         loading={idx === 0 ? 'eager' : 'lazy'}
