@@ -84,42 +84,6 @@ function updateBrandNames(lang: string) {
 export default function LanguageSwitcher() {
     const [currentLang, setCurrentLang] = useState('ru');
     const initDone = useRef(false);
-    const comboRetryTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-    // Try to trigger Google Translate combo box
-    const triggerCombo = useCallback((langCode: string, retries = 30) => {
-        if (comboRetryTimer.current) {
-            clearTimeout(comboRetryTimer.current);
-            comboRetryTimer.current = null;
-        }
-
-        const combo = document.querySelector('.goog-te-combo') as HTMLSelectElement;
-        if (combo) {
-            // Check if the language option exists in the combo
-            let found = false;
-            for (let i = 0; i < combo.options.length; i++) {
-                if (combo.options[i].value === langCode) {
-                    found = true;
-                    break;
-                }
-            }
-            if (found) {
-                combo.value = langCode;
-                combo.dispatchEvent(new Event('change'));
-                setTimeout(() => updateBrandNames(langCode), 500);
-                return;
-            }
-        }
-
-        // Retry if combo not ready
-        if (retries > 0) {
-            comboRetryTimer.current = setTimeout(() => triggerCombo(langCode, retries - 1), 200);
-        } else {
-            // Last resort: set cookie and reload
-            setTranslateCookie(langCode);
-            window.location.reload();
-        }
-    }, []);
 
     useEffect(() => {
         if (initDone.current) return;
@@ -171,11 +135,9 @@ export default function LanguageSwitcher() {
                     'google_translate_element'
                 );
 
-                // After init, apply saved language
-                if (saved !== 'ru') {
-                    setTimeout(() => triggerCombo(saved), 1000);
-                }
-                // Update brand names
+                // The googtrans cookie (set before init) makes Google Translate
+                // apply the saved language automatically. No combo manipulation,
+                // so there is no retry/reload loop when the script is slow.
                 updateBrandNames(saved);
             };
 
@@ -186,47 +148,22 @@ export default function LanguageSwitcher() {
             document.body.appendChild(script);
         } else {
             // Script already loaded (SPA navigation)
-            if (saved !== 'ru') {
-                setTimeout(() => triggerCombo(saved), 500);
-            }
             updateBrandNames(saved);
         }
-    }, [triggerCombo]);
+    }, []);
 
     const switchLanguage = useCallback((langCode: string) => {
         if (langCode === currentLang) return;
 
+        // Persist choice + set the googtrans cookie, then reload once.
+        // Google Translate reads the cookie on load and applies the language
+        // (or restores Russian when the cookie is cleared). A single reload is
+        // reliable and avoids the previous flicker/reload loop.
         localStorage.setItem('site-lang', langCode);
         setCurrentLang(langCode);
         setTranslateCookie(langCode);
-
-        if (langCode === 'ru') {
-            // Going back to Russian
-            // Google Translate doesn't have a clean "undo" API
-            // The only reliable way is to reload with cleared cookies
-            updateBrandNames('ru');
-
-            // Try the close button in the banner frame first
-            try {
-                const frame = document.querySelector('.goog-te-banner-frame') as HTMLIFrameElement;
-                if (frame && frame.contentDocument) {
-                    const btn = frame.contentDocument.querySelector('.goog-close-link') as HTMLElement;
-                    if (btn) {
-                        btn.click();
-                        return;
-                    }
-                }
-            } catch (e) {
-                // Cross-origin or other error, fall through to reload
-            }
-
-            // Cookie is already cleared — reload restores Russian
-            window.location.reload();
-        } else {
-            // Switch to EN or KA
-            triggerCombo(langCode);
-        }
-    }, [currentLang, triggerCombo]);
+        window.location.reload();
+    }, [currentLang]);
 
     return (
         <div className="flex items-center gap-1.5">
