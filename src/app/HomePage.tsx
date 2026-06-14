@@ -202,10 +202,10 @@ export default function HomePage({ products, settings }: HomePageProps) {
             />
 
             {/* === CATALOG SECTION === */}
-            <section id="catalog" className="py-16 bg-white">
+            <section id="catalog" className="pt-8 pb-12 sm:py-16 bg-white">
                 <div className="container mx-auto px-6">
                     {/* Search + Sort Bar */}
-                    <div className="flex flex-col sm:flex-row gap-4 mb-8">
+                    <div className="flex flex-col sm:flex-row gap-4 mb-4 sm:mb-6">
                         <div className="relative flex-1">
                             <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400" />
                             <input
@@ -213,7 +213,7 @@ export default function HomePage({ products, settings }: HomePageProps) {
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 placeholder="Поиск букетов..."
-                                className="w-full pl-11 pr-4 py-3 bg-zinc-50 border border-zinc-200 rounded-lg text-zinc-900 text-sm
+                                className="w-full pl-10 pr-4 py-2.5 bg-zinc-50 border border-zinc-200 rounded-lg text-zinc-900 text-sm
                                     focus:border-[#D4AF37] focus:outline-none focus:ring-1 focus:ring-[#D4AF37]/30 transition-colors"
                             />
                             {searchQuery && (
@@ -230,8 +230,8 @@ export default function HomePage({ products, settings }: HomePageProps) {
                             <select
                                 value={sortOrder}
                                 onChange={(e) => setSortOrder(e.target.value as 'default' | 'asc' | 'desc')}
-                                className="pl-9 pr-8 py-3 bg-zinc-50 border border-zinc-200 rounded-lg text-zinc-700 text-sm
-                                    focus:border-[#D4AF37] focus:outline-none appearance-none cursor-pointer min-w-[180px]"
+                                className="pl-9 pr-8 py-2.5 bg-zinc-50 border border-zinc-200 rounded-lg text-zinc-700 text-sm
+                                    focus:border-[#D4AF37] focus:outline-none appearance-none cursor-pointer min-w-[160px]"
                             >
                                 <option value="default">По умолчанию</option>
                                 <option value="asc">Цена: по возрастанию</option>
@@ -241,14 +241,14 @@ export default function HomePage({ products, settings }: HomePageProps) {
                     </div>
 
                     {/* Price Filter Buttons */}
-                    <div className="flex flex-wrap gap-2 mb-8">
+                    <div className="flex flex-wrap gap-2 mb-6 sm:mb-8">
                         {priceRanges.map((range) => {
                             const active = priceFilter === range;
                             return (
                                 <button
                                     key={range}
                                     onClick={() => setPriceFilter(active ? null : range)}
-                                    className={`px-5 py-2 rounded-full text-sm font-medium tracking-wide border transition-all duration-200
+                                    className={`px-3.5 py-1.5 rounded-full text-[13px] font-medium tracking-wide border transition-all duration-200
                                         ${active
                                             ? 'bg-[#D4AF37] border-[#D4AF37] text-white shadow-sm'
                                             : 'bg-white border-zinc-200 text-zinc-600 hover:border-[#D4AF37] hover:text-[#D4AF37]'}`}
@@ -260,7 +260,7 @@ export default function HomePage({ products, settings }: HomePageProps) {
                         {priceFilter && (
                             <button
                                 onClick={() => setPriceFilter(null)}
-                                className="px-5 py-2 rounded-full text-sm font-medium tracking-wide border border-zinc-200 text-zinc-400 hover:text-zinc-600 hover:border-zinc-300 transition-all duration-200 flex items-center gap-1.5"
+                                className="px-3.5 py-1.5 rounded-full text-[13px] font-medium tracking-wide border border-zinc-200 text-zinc-400 hover:text-zinc-600 hover:border-zinc-300 transition-all duration-200 flex items-center gap-1.5"
                             >
                                 <X size={14} />
                                 Сбросить
@@ -269,7 +269,7 @@ export default function HomePage({ products, settings }: HomePageProps) {
                     </div>
 
                     {/* Section Title */}
-                    <h2 className="text-xl uppercase tracking-[0.2em] text-zinc-800 mb-10">
+                    <h2 className="text-xl uppercase tracking-[0.2em] text-zinc-800 mb-6 sm:mb-10">
                         Наша коллекция
                         {(searchQuery || priceFilter) && <span className="text-sm text-zinc-400 ml-3 normal-case tracking-normal">({filteredProducts.length})</span>}
                     </h2>
@@ -298,7 +298,7 @@ export default function HomePage({ products, settings }: HomePageProps) {
 
             {/* === ABOUT SECTION - Only shows if enabled AND has text === */}
             {settings?.about_enabled && settings?.about_text && (
-                <section id="about" className="py-16 bg-zinc-50">
+                <section id="about" className="py-10 sm:py-16 bg-zinc-50">
                     <div className="container mx-auto px-6">
                         <div className="max-w-3xl mx-auto text-center">
                             <h2 className="text-xl uppercase tracking-[0.2em] text-zinc-800 mb-6">

@@ -8,9 +8,9 @@ interface DeliverySectionProps {
 
 export default function DeliverySection({ settings }: DeliverySectionProps) {
     return (
-        <section id="delivery" className="py-16 bg-white">
+        <section id="delivery" className="py-10 sm:py-16 bg-white">
             <div className="container mx-auto px-6">
-                <h2 className="text-xl uppercase tracking-[0.2em] text-zinc-800 text-center mb-10">
+                <h2 className="text-xl uppercase tracking-[0.2em] text-zinc-800 text-center mb-6 sm:mb-10">
                     {settings?.delivery_enabled !== false ? 'Доставка и оплата' : 'Самовывоз и оплата'}
                 </h2>
 

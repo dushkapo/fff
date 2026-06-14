@@ -17,13 +17,18 @@ const nextConfig = {
     // Security headers
     async headers() {
         const supabase = 'https://fvkexoukttzcgvcujwrp.supabase.co';
+        // Google Translate widget domains
+        const gtScript = 'https://translate.google.com https://translate.googleapis.com https://www.google.com https://www.gstatic.com';
+        const gtConnect = 'https://translate.googleapis.com https://translate.google.com';
+        const gtImg = 'https://www.google.com https://www.gstatic.com https://translate.googleapis.com https://translate.google.com';
         const csp = [
             "default-src 'self'",
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+            `script-src 'self' 'unsafe-inline' 'unsafe-eval' ${gtScript}`,
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://www.gstatic.com",
             "font-src 'self' https://fonts.gstatic.com",
-            `img-src 'self' data: blob: ${supabase} https://images.unsplash.com`,
-            `connect-src 'self' ${supabase}`,
+            `img-src 'self' data: blob: ${supabase} https://images.unsplash.com ${gtImg}`,
+            `connect-src 'self' ${supabase} ${gtConnect}`,
+            "frame-src https://translate.google.com https://translate.googleapis.com",
             "frame-ancestors 'none'",
             "base-uri 'self'",
             "form-action 'self'",
