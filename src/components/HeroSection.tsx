@@ -3,8 +3,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import Link from 'next/link';
-import { Sparkles } from 'lucide-react';
 
 const bouquetImages = [
     '/bouquet-1.jpg',
@@ -32,7 +30,7 @@ export default function HeroSection({ title, subtitle }: HeroSectionProps) {
     }, []);
 
     return (
-        <section className="relative h-[80vh] min-h-[600px] overflow-hidden bg-black">
+        <section className="relative h-[70vh] min-h-[420px] sm:min-h-[600px] overflow-hidden bg-black">
             {/* Background Images - All stacked, only current one visible */}
             {bouquetImages.map((img, idx) => (
                 <div
@@ -44,7 +42,7 @@ export default function HeroSection({ title, subtitle }: HeroSectionProps) {
                         src={img}
                         alt={`Букет ${idx + 1}`}
                         fill
-                        className="object-contain"
+                        className="object-cover object-center"
                         sizes="100vw"
                         priority={idx === 0}
                         loading={idx === 0 ? 'eager' : 'lazy'}
@@ -76,20 +74,6 @@ export default function HeroSection({ title, subtitle }: HeroSectionProps) {
                     {subtitle || 'Изысканные букеты для особых моментов'}
                 </motion.p>
 
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.4 }}
-                >
-                    <Link
-                        href="/create-bouquet"
-                        className="border border-white/50 text-white px-8 py-3 uppercase tracking-[0.2em] text-sm
-                         hover:bg-white hover:text-black transition-all duration-300 flex items-center gap-3"
-                    >
-                        <Sparkles size={16} />
-                        Создать свой букет
-                    </Link>
-                </motion.div>
             </div>
 
             {/* Slider Dots */}

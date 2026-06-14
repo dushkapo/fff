@@ -40,12 +40,25 @@ const TIME_SLOTS = [
 ];
 
 export default function OrderModal({ product, isOpen, onClose, deliveryEnabled = true, settings }: OrderModalProps) {
-    const [step, setStep] = useState(1);
-    const [deliveryType, setDeliveryType] = useState<'delivery' | 'pickup'>(deliveryEnabled ? 'delivery' : 'pickup');
-    const [timeType, setTimeType] = useState<'urgent' | 'specific'>('urgent');
-    const [selectedDay, setSelectedDay] = useState('');
-    const [selectedTime, setSelectedTime] = useState('12:00');
-    const [formData, setFormData] = useState({ name: '', phone: '', address: '', comment: '' });
+    const SESSION_KEY = product ? `order_draft_${product.id}` : 'order_draft';
+
+    // Restore saved state from sessionStorage (survives page refresh)
+    const getSaved = (key: string, fallback: any) => {
+        if (typeof window === 'undefined') return fallback;
+        try {
+            const raw = sessionStorage.getItem(SESSION_KEY);
+            if (!raw) return fallback;
+            const saved = JSON.parse(raw);
+            return saved[key] ?? fallback;
+        } catch { return fallback; }
+    };
+
+    const [step, setStep] = useState(() => getSaved('step', 1));
+    const [deliveryType, setDeliveryType] = useState<'delivery' | 'pickup'>(() => getSaved('deliveryType', deliveryEnabled ? 'delivery' : 'pickup'));
+    const [timeType, setTimeType] = useState<'urgent' | 'specific'>(() => getSaved('timeType', 'urgent'));
+    const [selectedDay, setSelectedDay] = useState(() => getSaved('selectedDay', ''));
+    const [selectedTime, setSelectedTime] = useState(() => getSaved('selectedTime', '12:00'));
+    const [formData, setFormData] = useState(() => getSaved('formData', { name: '', phone: '', address: '', comment: '' }));
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const [error, setError] = useState('');
@@ -55,10 +68,22 @@ export default function OrderModal({ product, isOpen, onClose, deliveryEnabled =
     // Initialize days on mount
     useEffect(() => {
         setDays(getNextDays());
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        setSelectedDay(tomorrow.toISOString().split('T')[0]);
+        if (!selectedDay) {
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            setSelectedDay(tomorrow.toISOString().split('T')[0]);
+        }
     }, []);
+
+    // Save state to sessionStorage on every change
+    useEffect(() => {
+        if (!product || isSuccess) return;
+        try {
+            sessionStorage.setItem(SESSION_KEY, JSON.stringify({
+                step, deliveryType, timeType, selectedDay, selectedTime, formData
+            }));
+        } catch { /* ignore quota errors */ }
+    }, [step, deliveryType, timeType, selectedDay, selectedTime, formData, isSuccess]);
 
     // If delivery is disabled, force pickup
     useEffect(() => {
@@ -66,6 +91,12 @@ export default function OrderModal({ product, isOpen, onClose, deliveryEnabled =
             setDeliveryType('pickup');
         }
     }, [deliveryEnabled]);
+
+    // Clear session state after successful order
+    const clearSavedDraft = () => {
+        try { sessionStorage.removeItem(SESSION_KEY); } catch { }
+    };
+
 
     if (!product) return null;
 
@@ -146,6 +177,7 @@ export default function OrderModal({ product, isOpen, onClose, deliveryEnabled =
             }
 
             setIsSuccess(true);
+            clearSavedDraft();
             setStep(4);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Ошибка отправки');
@@ -224,11 +256,11 @@ export default function OrderModal({ product, isOpen, onClose, deliveryEnabled =
                                             {product.description || 'Изысканный букет свежих цветов, созданный нашими флористами с любовью.'}
                                         </p>
                                         <div className="flex items-baseline gap-3">
-                                            <span className="font-serif text-3xl font-bold text-[#1a1a1a]">
+                                            <span suppressHydrationWarning className="font-serif text-3xl font-bold text-[#1a1a1a]">
                                                 {finalPrice.toLocaleString('ka-GE')} GEL
                                             </span>
                                             {product.discount > 0 && (
-                                                <span className="text-lg text-gray-400 line-through">
+                                                <span suppressHydrationWarning className="text-lg text-gray-400 line-through">
                                                     {product.price.toLocaleString('ka-GE')} GEL
                                                 </span>
                                             )}
@@ -414,7 +446,7 @@ export default function OrderModal({ product, isOpen, onClose, deliveryEnabled =
                                     <div className="bg-gray-50 p-4 rounded-xl space-y-2">
                                         <div className="flex justify-between">
                                             <span>Букет:</span>
-                                            <span className="font-medium">{finalPrice.toLocaleString('ka-GE')} GEL</span>
+                                            <span suppressHydrationWarning className="font-medium">{finalPrice.toLocaleString('ka-GE')} GEL</span>
                                         </div>
                                         {deliveryType === 'delivery' && deliveryPriceFromSettings > 0 && (
                                             <div className="flex justify-between">
@@ -424,7 +456,7 @@ export default function OrderModal({ product, isOpen, onClose, deliveryEnabled =
                                         )}
                                         <div className="flex justify-between font-bold text-lg pt-2 border-t">
                                             <span>Итого:</span>
-                                            <span className="text-[#1a1a1a]">{totalPrice.toLocaleString('ka-GE')} GEL</span>
+                                            <span suppressHydrationWarning className="text-[#1a1a1a]">{totalPrice.toLocaleString('ka-GE')} GEL</span>
                                         </div>
                                     </div>
 

@@ -62,11 +62,11 @@ export default function ProductCard({ product, onOrder, index }: ProductCardProp
 
                 {/* Price */}
                 <div className="flex items-baseline gap-3 mb-4">
-                    <span className="text-2xl sm:text-3xl font-semibold text-[#1a1a1a] tracking-tight">
+                    <span suppressHydrationWarning className="text-2xl sm:text-3xl font-semibold text-[#1a1a1a] tracking-tight">
                         {finalPrice.toLocaleString('ka-GE')} GEL
                     </span>
                     {product.discount > 0 && (
-                        <span className="text-base text-gray-400 line-through font-light">
+                        <span suppressHydrationWarning className="text-base text-gray-400 line-through font-light">
                             {product.price.toLocaleString('ka-GE')} GEL
                         </span>
                     )}

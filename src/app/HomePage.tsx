@@ -1,8 +1,7 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import { Menu, X, Sparkles, Search, ArrowUpDown } from 'lucide-react';
-import Link from 'next/link';
+import { useState, useMemo, useEffect } from 'react';
+import { Menu, X, Search, ArrowUpDown } from 'lucide-react';
 import { Product, Settings } from '@/lib/supabase';
 import { matchesSearch } from '@/lib/searchDict';
 import HeroSection from '@/components/HeroSection';
@@ -23,11 +22,57 @@ export default function HomePage({ products, settings }: HomePageProps) {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [sortOrder, setSortOrder] = useState<'default' | 'asc' | 'desc'>('default');
+    const [priceFilter, setPriceFilter] = useState<number | null>(null);
+    const [hydrated, setHydrated] = useState(false);
+
+    const priceRanges = [100, 200, 300, 400];
+
+    // After mount: read sessionStorage (only runs on client, avoids hydration mismatch)
+    useEffect(() => {
+        try {
+            const savedSearch = sessionStorage.getItem('catalog_search') || '';
+            const savedSort = (sessionStorage.getItem('catalog_sort') as 'default' | 'asc' | 'desc') || 'default';
+            const savedPrice = sessionStorage.getItem('catalog_price');
+            if (savedSearch) setSearchQuery(savedSearch);
+            if (savedSort !== 'default') setSortOrder(savedSort);
+            if (savedPrice) setPriceFilter(Number(savedPrice));
+
+            const savedProductId = sessionStorage.getItem('order_active_product_id');
+            if (savedProductId && products.length > 0) {
+                const savedProduct = products.find(p => String(p.id) === savedProductId);
+                if (savedProduct) {
+                    setSelectedProduct(savedProduct);
+                    setIsModalOpen(true);
+                }
+            }
+        } catch { }
+        setHydrated(true);
+    }, [products]);
+
+    // Persist search and sort on change (only after hydration to avoid writing empty values)
+    useEffect(() => {
+        if (!hydrated) return;
+        try {
+            sessionStorage.setItem('catalog_search', searchQuery);
+            sessionStorage.setItem('catalog_sort', sortOrder);
+            if (priceFilter) {
+                sessionStorage.setItem('catalog_price', String(priceFilter));
+            } else {
+                sessionStorage.removeItem('catalog_price');
+            }
+        } catch { }
+    }, [searchQuery, sortOrder, priceFilter, hydrated]);
 
     const filteredProducts = useMemo(() => {
         let result = products;
         if (searchQuery.trim()) {
             result = result.filter(p => matchesSearch(p.name, p.description, searchQuery));
+        }
+        if (priceFilter) {
+            result = result.filter(p => {
+                const finalPrice = p.discount > 0 ? Math.round(p.price * (1 - p.discount / 100)) : p.price;
+                return finalPrice <= priceFilter;
+            });
         }
         if (sortOrder === 'asc') {
             result = [...result].sort((a, b) => a.price - b.price);
@@ -35,23 +80,59 @@ export default function HomePage({ products, settings }: HomePageProps) {
             result = [...result].sort((a, b) => b.price - a.price);
         }
         return result;
-    }, [products, searchQuery, sortOrder]);
+    }, [products, searchQuery, sortOrder, priceFilter]);
 
     const handleOrder = (product: Product) => {
         if (settings?.shop_open === false) return;
+        try { sessionStorage.setItem('order_active_product_id', String(product.id)); } catch { }
         setSelectedProduct(product);
         setIsModalOpen(true);
     };
 
+
+
+
+    if (settings?.shop_open === false) {
+        return (
+            <div className="relative min-h-screen flex flex-col items-center justify-center px-6 overflow-hidden bg-[#FFFFF0] w-full max-w-[100vw]">
+                {/* Animated Background Graphics */}
+                <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+
+                    {/* Bouncing emojis */}
+                    {[...Array(8)].map((_, i) => (
+                        <div
+                            key={i}
+                            className="absolute text-3xl opacity-20 animate-bounce"
+                            style={{
+                                left: `${10 + i * 11}%`,
+                                top: `${20 + (i % 4) * 20}%`,
+                                animationDelay: `${i * 0.7}s`,
+                                animationDuration: `${3 + i * 0.4}s`,
+                            }}
+                        >
+                            🌸
+                        </div>
+                    ))}
+                </div>
+
+                {/* Foreground Content */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center justify-center text-center w-full px-6">
+                    <h1 className="text-2xl sm:text-4xl font-bold text-zinc-900 mb-4 font-serif tracking-widest uppercase text-balance" style={{ letterSpacing: '0.15em' }}>
+                        Временно недоступно
+                    </h1>
+                    <p className="text-zinc-600 text-base sm:text-lg max-w-md mb-2 text-balance font-medium">
+                        Наш магазин временно закрыт на техническое обслуживание или не принимает заказы.
+                    </p>
+                    <p className="text-zinc-400 text-sm sm:text-base mt-4">
+                        Мы скоро вернемся со свежими цветами 🌸
+                    </p>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen bg-white">
-
-            {/* === SHOP CLOSED BANNER === */}
-            {settings?.shop_open === false && (
-                <div className="bg-red-600 text-white text-center py-3 px-4 text-sm font-medium sticky top-0 z-[60]">
-                    🔒 Магазин временно закрыт. Заказы не принимаются.
-                </div>
-            )}
 
             {/* === WHITE NAVIGATION BAR === */}
             <header className="bg-white sticky top-0 z-50 border-b border-zinc-200">
@@ -80,13 +161,6 @@ export default function HomePage({ products, settings }: HomePageProps) {
                         <a href="#contacts" className="text-zinc-600 hover:text-zinc-900 text-sm uppercase tracking-wider transition-colors">
                             Контакты
                         </a>
-                        <Link
-                            href="/create-bouquet"
-                            className="flex items-center gap-2 text-[#D4AF37] hover:text-[#1a1a1a] text-sm uppercase tracking-wider transition-colors font-medium"
-                        >
-                            <Sparkles size={16} />
-                            Создать букет
-                        </Link>
                     </nav>
 
                     {/* Mobile Menu Button */}
@@ -116,14 +190,6 @@ export default function HomePage({ products, settings }: HomePageProps) {
                             <a href="#contacts" className="text-zinc-600 text-sm uppercase tracking-wider" onClick={() => setMobileMenuOpen(false)}>
                                 Контакты
                             </a>
-                            <Link
-                                href="/create-bouquet"
-                                className="flex items-center gap-2 text-[#D4AF37] text-sm uppercase tracking-wider font-medium"
-                                onClick={() => setMobileMenuOpen(false)}
-                            >
-                                <Sparkles size={16} />
-                                Создать букет
-                            </Link>
                         </nav>
                     </div>
                 )}
@@ -174,10 +240,38 @@ export default function HomePage({ products, settings }: HomePageProps) {
                         </div>
                     </div>
 
+                    {/* Price Filter Buttons */}
+                    <div className="flex flex-wrap gap-2 mb-8">
+                        {priceRanges.map((range) => {
+                            const active = priceFilter === range;
+                            return (
+                                <button
+                                    key={range}
+                                    onClick={() => setPriceFilter(active ? null : range)}
+                                    className={`px-5 py-2 rounded-full text-sm font-medium tracking-wide border transition-all duration-200
+                                        ${active
+                                            ? 'bg-[#D4AF37] border-[#D4AF37] text-white shadow-sm'
+                                            : 'bg-white border-zinc-200 text-zinc-600 hover:border-[#D4AF37] hover:text-[#D4AF37]'}`}
+                                >
+                                    до {range} лари
+                                </button>
+                            );
+                        })}
+                        {priceFilter && (
+                            <button
+                                onClick={() => setPriceFilter(null)}
+                                className="px-5 py-2 rounded-full text-sm font-medium tracking-wide border border-zinc-200 text-zinc-400 hover:text-zinc-600 hover:border-zinc-300 transition-all duration-200 flex items-center gap-1.5"
+                            >
+                                <X size={14} />
+                                Сбросить
+                            </button>
+                        )}
+                    </div>
+
                     {/* Section Title */}
                     <h2 className="text-xl uppercase tracking-[0.2em] text-zinc-800 mb-10">
                         Наша коллекция
-                        {searchQuery && <span className="text-sm text-zinc-400 ml-3 normal-case tracking-normal">({filteredProducts.length})</span>}
+                        {(searchQuery || priceFilter) && <span className="text-sm text-zinc-400 ml-3 normal-case tracking-normal">({filteredProducts.length})</span>}
                     </h2>
 
                     {/* Products Grid */}
@@ -195,7 +289,7 @@ export default function HomePage({ products, settings }: HomePageProps) {
                     ) : (
                         <div className="text-center py-16">
                             <p className="text-zinc-400 uppercase tracking-wider">
-                                {searchQuery ? 'Ничего не найдено' : 'Букеты скоро появятся'}
+                                {searchQuery || priceFilter ? 'Ничего не найдено' : 'Букеты скоро появятся'}
                             </p>
                         </div>
                     )}
@@ -232,6 +326,10 @@ export default function HomePage({ products, settings }: HomePageProps) {
                     onClose={() => {
                         setIsModalOpen(false);
                         setSelectedProduct(null);
+                        try {
+                            sessionStorage.removeItem('order_active_product_id');
+                            sessionStorage.removeItem(`order_draft_${selectedProduct.id}`);
+                        } catch { }
                     }}
                     settings={settings}
                     deliveryEnabled={settings?.delivery_enabled !== false}

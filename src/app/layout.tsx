@@ -17,7 +17,10 @@ const playfair = Playfair_Display({
     display: "swap",
 });
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mirtsvetov.vercel.app';
+
 export const metadata: Metadata = {
+    metadataBase: new URL(siteUrl),
     title: "Мир Цветов - Премиум букеты с доставкой",
     description: "Эксклюзивные букеты премиум-класса. Доставка за 2 часа или самовывоз. Цветочный бутик Мир Цветов.",
     keywords: "букеты, цветы, доставка цветов, премиум букеты, розы, пионы, мир цветов",
@@ -25,6 +28,7 @@ export const metadata: Metadata = {
         title: "Мир Цветов - Премиум букеты",
         description: "Эксклюзивные букеты для особых моментов",
         type: "website",
+        url: "https://mirtsvetov.vercel.app",
     },
 };
 
