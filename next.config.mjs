@@ -4,7 +4,7 @@ const nextConfig = {
         remotePatterns: [
             {
                 protocol: 'https',
-                hostname: 'fvkexoukttzgcgvcujwrp.supabase.co',
+                hostname: 'fvkexoukttzcgvcujwrp.supabase.co',
                 pathname: '/storage/v1/object/public/**',
             },
             {
@@ -12,8 +12,58 @@ const nextConfig = {
                 hostname: 'images.unsplash.com',
             },
         ],
-        // Allow local images from public folder
         unoptimized: false,
+    },
+    // Security headers
+    async headers() {
+        const supabase = 'https://fvkexoukttzcgvcujwrp.supabase.co';
+        const csp = [
+            "default-src 'self'",
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+            "font-src 'self' https://fonts.gstatic.com",
+            `img-src 'self' data: blob: ${supabase} https://images.unsplash.com`,
+            `connect-src 'self' ${supabase}`,
+            "frame-ancestors 'none'",
+            "base-uri 'self'",
+            "form-action 'self'",
+        ].join('; ');
+
+        return [
+            {
+                source: '/(.*)',
+                headers: [
+                    {
+                        key: 'Content-Security-Policy',
+                        value: csp,
+                    },
+                    {
+                        key: 'X-Frame-Options',
+                        value: 'DENY',
+                    },
+                    {
+                        key: 'X-Content-Type-Options',
+                        value: 'nosniff',
+                    },
+                    {
+                        key: 'Referrer-Policy',
+                        value: 'strict-origin-when-cross-origin',
+                    },
+                    {
+                        key: 'Permissions-Policy',
+                        value: 'camera=(), microphone=(), geolocation=()',
+                    },
+                    {
+                        key: 'X-DNS-Prefetch-Control',
+                        value: 'on',
+                    },
+                    {
+                        key: 'Strict-Transport-Security',
+                        value: 'max-age=63072000; includeSubDomains; preload',
+                    },
+                ],
+            },
+        ];
     },
 };
 
