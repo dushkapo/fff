@@ -58,7 +58,7 @@ export default function OrderModal({ product, isOpen, onClose, deliveryEnabled =
     const [timeType, setTimeType] = useState<'urgent' | 'specific'>(() => getSaved('timeType', 'urgent'));
     const [selectedDay, setSelectedDay] = useState(() => getSaved('selectedDay', ''));
     const [selectedTime, setSelectedTime] = useState(() => getSaved('selectedTime', '12:00'));
-    const [formData, setFormData] = useState(() => getSaved('formData', { name: '', phone: '', address: '', comment: '' }));
+    const [formData, setFormData] = useState<{ name: string; phone: string; address: string; comment: string }>(() => getSaved('formData', { name: '', phone: '', address: '', comment: '' }));
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const [error, setError] = useState('');
